@@ -225,7 +225,7 @@ def lambda_handler(event, context):
                 answer_id = data['ButtonPayload'][0]
                 answer_split_len = len(answer_id.split("/"))
                 answer_split_topic = answer_id.split("/")[0]
-                if answer_id == "terms_accepted":
+                if answer_id == "accept_terms":
                     invoke_create_profile(event, mobile)
                 elif answer_id == "correct_name":
                     update_client_name(mobile)
