@@ -929,7 +929,7 @@ def set_profile_name(status_item, data, mobile):
     # delete client if the last message (asking the name) was 12hrs ago
     if minutes_difference > 60 * HOURS_TO_DELETE_AFTER_ASKING_NAME:
         delete_client(mobile)
-    message = data["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
+    message = data["Body"][0]
 
     if len(message.split(" ")) > 2:
         response = send_message(
@@ -937,10 +937,8 @@ def set_profile_name(status_item, data, mobile):
             mobile,
         )
     else:
-        response = send_message_confirm_name_with_button(
-            f"To confirm, is your name {message}?",
-            mobile,
-        )
+        variables={"1":message}
+        response = send_template_message("terms_and_conditions_en", variables, mobile, )
         update_conv_status(mobile, "confirm_name", message)
     return response
 
@@ -1259,7 +1257,7 @@ def text_handler(data, event):
             
             if response["Count"] == 0:
                 variables={"1":"Terms+and+conditions.pdf"}
-                response = send_template_message("terms_and_conditions_en", variables, mobile, )
+                response = send_template_message("terms_and_conditions_en", variables, mobile)
             else:
                 items = response["Items"]
                 for item in items:
