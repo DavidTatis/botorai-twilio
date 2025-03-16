@@ -18,10 +18,8 @@ time_zone = ZoneInfo("America/New_York")
 
 TOKEN = os.getenv("TOKEN")
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
+stripe.api_key=os.getenv("STRIPE_KEY")
 
-stripe.api_key = (
-    "sk_test_51OLZZTFSpPiJQ7xtNkeupYYTjxz5wcapEIArm9FR5AhPCG8pB2K5AhXqIpT3TrX6xZHUeyq3dp7PkNnUvOa7k9HB00EdrcQegS"
-)
 phone_number_id = 524839744037877
 base_url = "https://graph.facebook.com/v17.0"
 url = f"{base_url}/{phone_number_id}/messages"
