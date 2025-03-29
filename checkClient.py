@@ -233,39 +233,6 @@ def send_message_list(message, recipient_id, header_message, button_name, sectio
     return r.json()
 
 
-def send_message_menu(message, recipient_id):
-    data = {
-        "messaging_product": "whatsapp",
-        "recipient_type": "individual",
-        "to": recipient_id,
-        "type": "interactive",
-        "interactive": {
-            "type": "button",
-            "header": {"type": "text", "text": "How can i help you❓"},
-            "body": {"text": message},
-            "action": {
-                "buttons": [
-                    {
-                        "type": "reply",
-                        "reply": {"id": "booking", "title": "BOOK NOW ✂️"},
-                    },
-                    {"type": "reply", "reply": {"id": "faqs", "title": "FAQs ℹ️"}},
-                ]
-            },
-            "footer": {"text": FOOTER_TEXT},
-        },
-    }
-    logging.info(f"Sending message with button to {recipient_id}")
-    r = requests.post(f"{url}", headers=headers, json=data)
-    if r.status_code == 200:
-        logging.info(f"Message sent to {recipient_id}")
-        return r.json()
-    logging.info(f"Message not sent to {recipient_id}")
-    logging.info(f"Status code: {r.status_code}")
-    logging.info(f"Response: {r.json()}")
-    return r.json()
-
-
 def send_booking_handler(message, booking_id, staff_id, recipient_id):
     data = {
         "messaging_product": "whatsapp",
@@ -1058,10 +1025,7 @@ def action_handler(data, event):
     mobile = get_mobile(data)
     if event["action"] == "perfil_created":
         if mobile:
-            response = send_message_menu(
-                "Im ready to help you either for booking or any question!",
-                mobile,
-            )
+            send_template_message("main_menu_en", {}, mobile)
             return True
     elif event["action"] == "booking" and "businessID" in event:
         mobile = get_mobile(data)
@@ -1290,9 +1254,7 @@ def text_handler(data, event):
                                 try:
                                     conversation_id = create_conversation(mobile, event["businessID"])
                                     create_message(mobile, RECEIVER_PHONE_NUMBER, "menu", conversation_id)
-                                    response = send_message_menu(
-                                        "Im ready to help you either for booking or any question!", mobile
-                                    )
+                                    response = send_template_message("main_menu_en", {}, mobile)
                                 except Exception as e:
                                     print(response)
                                     logging.error("Error at send message menu for profile created", e)
