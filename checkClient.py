@@ -851,7 +851,7 @@ def get_staff_list(businessID):
         FilterExpression="#deleted <> :trueValue",
         ProjectionExpression="#nm,phone,id",
     )
-    staff_list = [{"id": "barber/" + item["id"]["S"], "title": item["name"]["S"]} for item in response["Items"]]
+    staff_list = [{"id": "barber/" + item["id"]["S"], "item": item["name"]["S"]} for item in response["Items"]]
     return staff_list
 
 
@@ -1033,14 +1033,9 @@ def action_handler(data, event):
             # Create a new message and link it to the created conversation
             conversation_id = create_conversation(mobile, event["businessID"])
             create_message(mobile, RECEIVER_PHONE_NUMBER, "booking", conversation_id)
-
             staff_list = get_staff_list(event["businessID"])
             if staff_list:
-                response = send_message_list_barbers(
-                    "Select a professional to see all the services available.",
-                    mobile,
-                    staff_list,
-                )
+                send_list_picker_content(mobile,staff_list,"Select a professional to see all the services available.", "Select")
             else:
                 send_message("Sorry, there is not staff available.", mobile)
             return True
