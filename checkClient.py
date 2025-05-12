@@ -872,7 +872,7 @@ def get_service_list(businessID, staffID):
     service_list = [
         {
             "id": "service/" + staffID + "/" + item["id"]["S"],
-            "title": item["name"]["S"],
+            "item": item["name"]["S"],
             "description": "$"
             + item["price"]["N"]
             + " ~ "
@@ -1054,18 +1054,9 @@ def action_handler(data, event):
                     mobile,
                 )
                 staff_list = get_staff_list(event["businessID"])
-                response = send_message_list_barbers(
-                    "Please select another professional to see all the services available.",
-                    mobile,
-                    staff_list,
-                )
+                send_list_picker_content(mobile,staff_list,"Please select another professional to see all the services available.", "Select")
             else:
-                response = send_message_list_services(
-                    "Select a service to see available times.",
-                    mobile,
-                    service_list,
-                )
-
+                send_list_picker_content(mobile,service_list,"Select a service to see available times.", "Select")
             return True
     elif event["action"] == "select_day" and event["businessID"] and event["staffID"] and event["serviceID"]:
         mobile = get_mobile(data)
