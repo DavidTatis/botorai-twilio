@@ -547,17 +547,18 @@ def process_intervals(free_intervals, staffID, mobile, is_full_day):
         (12, 18, "Afternoon Hours"),
         (18, 24, "Night Hours"),
     ]
-
+    total_hours=[]
     for start_hour, end_hour, title in time_ranges:
         list_msg = create_time_slots(free_intervals, start_hour, end_hour, staffID)
         if list_msg:
             section_title = "AVAILABLE HOURS" if not is_full_day else title
+            total_hours=total_hours+list_msg
             if not is_full_day:
                 send_list_picker_content(mobile,list_msg,title,section_title)
                 # send_message_list(title, mobile, "", title.upper(), [section])
 
     if is_full_day and list_msg:
-        send_list_picker_content(mobile,list_msg,"All Day Hours","Booking time")
+        send_list_picker_content(mobile,total_hours,"All Day Hours","Booking time")
     elif not list_msg:
         send_message("No Available Hours", mobile)
 
@@ -1219,10 +1220,12 @@ def text_handler(data, event):
                                 parsed_start_date = datetime.strptime(data["start_date_local"], "%Y-%m-%dT%H:%M:%S%z")
                                 # booking is pending
                                 if parsed_start_date > datetime.now(time_zone):
+                                    send_message("Pending booking to be handle", mobile)
                                     conversation_id = create_conversation(mobile, event["businessID"])
                                     create_message(mobile, RECEIVER_PHONE_NUMBER, "hanlde_booking", conversation_id)
                                     handle_future_booking(data, mobile)
                                 else:  # booking passed
+                                    end_message("Passed booking to be handle", mobile)
                                     conversation_id = create_conversation(mobile, event["businessID"])
                                     create_message(mobile, RECEIVER_PHONE_NUMBER, f"review_sent:{data['staff_id']}", conversation_id)
                                     update_conv_status(mobile, "review_sent", f"{status_item['data']['S']}")
