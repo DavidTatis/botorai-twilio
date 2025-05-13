@@ -224,10 +224,9 @@ def lambda_handler(event, context):
         try:
                 if "ListId" in data:
                     answer_id = data['ListId'][0]
-                elif "ButtonPayload" in data:
-                    answer_id = data['ButtonPayload'][0]
                 else:
-                    assert "not a interactive message"
+                    answer_id = data['ButtonPayload'][0]
+                    
                 answer_split_len = len(answer_id.split("/"))
                 answer_split_topic = answer_id.split("/")[0]
                 if answer_id == "accept_terms":

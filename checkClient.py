@@ -522,21 +522,18 @@ def select_booking_day_handler(staff_id):
         time_list.append(
             {
                 "id": "day_selected/" + staff_id + "/" + day.strftime("%Y-%m-%d"),
-                "title": day.strftime("%A, %Y-%m-%d"),
+                "item": day.strftime("%A, %Y-%m-%d"),
                 "description": availability_string,
             }
         )
-
-    section1 = {"title": "NEXT DAYS", "rows": time_list}
-    sections = [section1]
-    return sections
+    return time_list
 
 
 def create_time_slots(free_intervals, start_hour, end_hour, staffID):
     return [
         {
             "id": "hour_selected/" + staffID + "/" + time[0].strftime("%H:%M"),
-            "title": time[0].strftime("%H:%M"),
+            "item": time[0].strftime("%H:%M"),
             "description": time[0].strftime("%H:%M") + "-" + time[1].strftime("%H:%M"),
         }
         for time in free_intervals
@@ -545,7 +542,6 @@ def create_time_slots(free_intervals, start_hour, end_hour, staffID):
 
 
 def process_intervals(free_intervals, staffID, mobile, is_full_day):
-    sections = []
     time_ranges = [
         (0, 12, "Morning Hours"),
         (12, 18, "Afternoon Hours"),
@@ -556,14 +552,13 @@ def process_intervals(free_intervals, staffID, mobile, is_full_day):
         list_msg = create_time_slots(free_intervals, start_hour, end_hour, staffID)
         if list_msg:
             section_title = "AVAILABLE HOURS" if not is_full_day else title
-            section = {"title": section_title, "rows": list_msg}
-            sections.append(section)
             if not is_full_day:
-                send_message_list(title, mobile, "", title.upper(), [section])
+                send_list_picker_content(mobile,list_msg,title,section_title)
+                # send_message_list(title, mobile, "", title.upper(), [section])
 
-    if is_full_day and sections:
-        send_message_list("All Day Hours", mobile, "Booking time", "HOURS", sections)
-    elif not sections:
+    if is_full_day and list_msg:
+        send_list_picker_content(mobile,list_msg,"All Day Hours","Booking time")
+    elif not list_msg:
         send_message("No Available Hours", mobile)
 
 
@@ -1066,7 +1061,8 @@ def action_handler(data, event):
             create_message(mobile, RECEIVER_PHONE_NUMBER, message_content, conversation_id)
             print("staff Id at slect_day", event["staffID"])
             sections = select_booking_day_handler(event["staffID"])
-            send_message_list("Select a day", mobile, "Booking time", "DAYS", sections)
+            send_list_picker_content(mobile,sections,"Select a day","Available days")
+            # send_message_list("Select a day", mobile, "Booking time", "DAYS", sections)
         return True
     elif event["action"] == "select_time" and event["businessID"] and event["staffID"] and event["day"]:
         mobile = get_mobile(data)
